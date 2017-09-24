@@ -13,10 +13,12 @@
 #define DONE 260
 #define BEGIN 400
 #define END 401
+#define IF 402
+#define WHILE 403
 #define NOT_FOUND 0
 
 int tokenval;
 int lineno;
-
+int constant;
 
 

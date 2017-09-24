@@ -71,6 +71,7 @@ int -- may contain a series of numeric characters
 
 main()
 {
+  printf("starting program");
   init();  // calls the init function in the symbol file
   printf("\n\nEnter arithmetic expressions terminated\n");
   printf("with semicolons (;).\n");
