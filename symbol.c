@@ -54,12 +54,17 @@ struct entry keywords[] = {
    "mod", MOD,
    "if",IF,
    "while",WHILE,
+   "<=",LE,
+   ">=",GE,
+   "==",EE,
+   "int",INT,
+   "def",CONSTANT,
    0 , 0
 };
 
 init()
 {
-  printf("entered init");
+  //printf("entered init");
   // allocating memory for the hashArray
 //  hashArray = (struct symbolInfo*)malloc(sizeof(struct symbolInfo)*SYMMAX);
 

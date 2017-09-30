@@ -1,3 +1,4 @@
+
 /**
 
 Notes
@@ -48,35 +49,3 @@ int -- may contain a series of numeric characters
   identifier assets
   minus
   identifier liabilities
-  close parenthesis
-  semi colon
-   
-   
-
-
-
-
-
-
-
-*/
-
-
-
-
-
-
-#include <stdio.h>
-#include "global.h"
-
-main()
-{
-// fp = fopen("file1.txt","r");
- // printf("starting program");
-  init();  // calls the init function in the symbol file
-//  printf("\n\nEnter arithmetic expressions terminated\n");
-//  printf("with semicolons (;).\n");
- // printf("Press <ctrl> c to quit\n\n->"); 
-  parse();
-  exit(0);
-}

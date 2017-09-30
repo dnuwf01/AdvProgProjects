@@ -6,34 +6,53 @@ int lookahead;
 parse()
 {
  //printf("entered parse"); 
- lookahead = lexan();
+  fp = fopen("file1.txt","r");
+  lookahead = lexan(fp);
   match(BEGIN);
  // printf("completed begin");
   while(lookahead != END){ 
     
-    if(match(IF))
-    {
-	expr();match(';');
-    }
-    else if(match(WHILE))
-    {
-	expr();match(';');
-    }
-    else if(lookahead==ID){
+    switch(lookahead){
+    case IF:
+    	match(IF);expr();match(';');
+	break;
+    
+    case WHILE:
+    	match(WHILE);expr();match(';');
+    	break;
+
+    case ID:
   	 expr(); 
-    	match(';');
-    }
-    else
+       	 match(';');
+         break;
+    case INT:
+	emit(INT,tokenval); 
+	match(INT);
+	 continue;
+        // expr(); match(';');
+	 //break; 
+    case CONSTANT:
+	emit(CONSTANT,tokenval);
+	match(CONSTANT);
+	emit(ID,tokenval);match(ID);
+	while(lookahead==NUM)
 	{
-		error("syntax error\n");
+		match(NUM);
 	}
+	break;
+    default:
+	//printf("No action lookahead %d\n",lookahead);
+	error("No action\n");
+	
   }
+}
   match(END);
+  exit(1);
 }
 
 expr()
 {
-  printf("expr");
+ // printf("expr");
   int t;
   term();
   while(1) {
@@ -50,39 +69,20 @@ expr()
 
 term()
 {
-  printf("term");
+ // printf("term");
   int t;
   factor();
   while(1) {
     switch(lookahead) {
-      case '*': case '/': case DIV: case MOD: case '<': case '>':case'=':
-        t = lookahead;
-        match(lookahead); 
-	if(t== '<' || t == '>' || t=='='){
-		if(lookahead!='=')
-		{
-			factor(); emit(t, NONE);
-			continue;
-		}
-		else 
-		{
-			int t1 = lookahead;
-			lookahead=lexan();
-			factor();	
-			emit(t,NONE);
-			emit(t1,NONE);
-			//lookahead=lexan();
-	     	}
-	}
-	else 
-	{
-		factor();emit(t,NONE);
-	}
-        continue;
+      case '*': case '/': case DIV: case MOD: case '<': case '>': case'=': case ':': case LE: case GE: case EE:
+ //       printf("check1\n");
+	t = lookahead;
+        match(lookahead);factor(); emit(t,NONE);
+	continue;
       
-      default:
-        if(constant == 1) factor;
-	else return;
+     default:
+//	 printf("lookahead is %c\n",lookahead);
+         return;
     }
   }
 
@@ -91,14 +91,14 @@ term()
 
 factor()
 {
-    printf("factor");
+//    printf("factor");
     switch(lookahead) {
       case '(':
         match('('); expr(); match(')'); break;
       case NUM:
-        emit(NUM, tokenval); match(NUM);constant=0; break;
+        emit(NUM, tokenval);match(NUM); break;
       case ID:
-	printf("printing ID");emit(ID, tokenval); match(ID); break;
+	emit(ID, tokenval); match(ID); break;
      // case IF:
   //	emit(IF,tokenval);match(IF);expr();break;
     //  case WHILE:
@@ -109,20 +109,23 @@ factor()
   
 }
 
-int match(int t)
+match(int t)
 {
   if(lookahead == t)
    {
-	// printf("matched: %d",t);
-	 lookahead = lexan();
-	 return 1;
+//	 printf("matched: %d\n",t);
+	 lookahead = lexan(fp);
+//	 printf("ne ->tval %d\n",tokenval);
+//	 printf("next-> %d\n",lookahead);
+	 
+	 //return 1;
    }
   else
   {
-       //printf("Lookahead %d",lookahead);
-      // printf(" to match ->>%d",t);
-     //  printf("syntax error match");
-       return 0;
+       printf("Lookahead %d",lookahead);
+       printf(" to match ->>%c",t);
+      error("syntax error match");
+      // return 0;
        
   }
 }

@@ -1,0 +1,7 @@
+begin
+a__b=5;
+if(c==b);
+while(d==e);
+#def q 25
+$kemckelm
+end

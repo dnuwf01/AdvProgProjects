@@ -19,8 +19,20 @@ emit(int t, int tval)
 	  printf("IF");
       case WHILE:
 	  printf("WHILE");
-      case '<': case'>': case'=':
+      case '<': case'>': case'=': 
 	  printf("%c\n",t);break;
+      case LE:
+	  printf("<=\n"); break;
+      case GE:
+	  printf(">=\n"); break;
+      case EE:
+	  printf("==\n"); break;
+      case INT:
+	  printf("INT\n"); break;
+      case CONSTANT:
+	  printf("Constant Declaration:\n"); break;
+      case ':':
+	  printf(""); break;
       default:
 	printf("The charcter is  %c",t);
         error("token %d, tokenval %d\n", t, tval);
