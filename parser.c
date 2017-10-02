@@ -1,58 +1,183 @@
+/**
+ *
+ * The parse file reads the document from the file and checks if it is a legal statement or not.
+ *
+ * @author Debarghya Nandi
+ *
+ * 
+ *
+ *
+ * */
+
+
+
+
+
+
+
 
 #include "global.h"
 
+
+
+
 int lookahead;
 
-parse()
+
+
+/**
+ *
+ * Parses a given set of statements
+ *
+ * */
+
+parse(char* file)
 {
- //printf("entered parse"); 
-  fp = fopen("file1.txt","r");
+  
+  fp = fopen(file,"r");   // reads the given file
   lookahead = lexan(fp);
-  match(BEGIN);
- // printf("completed begin");
-  while(lookahead != END){ 
+  match(BEGIN);   // matches BEGIN of file
+
+  statement();
+
+  match(END);  // matches END of file
+  exit(1);
+}
+
+
+
+
+
+
+
+/**
+ * A function that takes in the statement
+ *
+ * */
+
+statement()
+{
+	
+while(lookahead != END){ 
     
     switch(lookahead){
     case IF:
-    	match(IF);expr();match(';');
+    	selector();
 	break;
     
     case WHILE:
-    	match(WHILE);expr();match(';');
+    	iterator();
     	break;
 
     case ID:
-  	 expr(); 
-       	 match(';');
+  	 assignment();
          break;
     case INT:
 	emit(INT,tokenval); 
 	match(INT);
-	 continue;
-        // expr(); match(';');
-	 //break; 
+	continue;
+        
     case CONSTANT:
-	emit(CONSTANT,tokenval);
-	match(CONSTANT);
-	emit(ID,tokenval);match(ID);
-	while(lookahead==NUM)
-	{
-		match(NUM);
-	}
+	constant_declaration();
 	break;
     default:
-	//printf("No action lookahead %d\n",lookahead);
-	error("No action\n");
 	
+	error("No action\n");
+  }	
   }
+}  
+
+
+
+
+
+
+/**
+ *A function to carry out the operation of the iterator
+* 
+**/
+
+
+iterator()
+{
+  match(WHILE);
+  expr();
+  match(';');
 }
-  match(END);
-  exit(1);
+
+
+
+
+
+
+/**
+ * A function to carry out the assignment operation
+ *
+ * */
+
+assignment()
+{
+  expr();
+  match(';');
 }
+
+
+
+
+
+
+
+/**
+ *
+ *A function to implement the selector operation
+ * 
+ * */
+selector()
+{
+ match(IF);
+ expr();
+ match(';');
+}
+
+
+
+
+
+
+
+/**
+ *
+ *A function to handle constant declaration
+ *
+ *
+ * */
+
+
+constant_declaration()
+{
+    emit(CONSTANT,tokenval);
+    match(CONSTANT);
+    emit(ID,tokenval);match(ID);
+    while(lookahead==NUM)
+    {
+	match(NUM);
+    }
+}
+
+
+
+
+
+/**
+ *
+ * The expression function representing the expression non-terminal for parsing
+ *
+ * */
+
 
 expr()
 {
- // printf("expr");
+ 
   int t;
   term();
   while(1) {
@@ -67,31 +192,50 @@ expr()
   } 
 }
 
+
+
+
+
+/**
+ *
+ *
+ * The term function representing the term non - terminal for parsing
+ *
+ *
+ *
+ **/
+
 term()
 {
- // printf("term");
+ 
   int t;
   factor();
   while(1) {
     switch(lookahead) {
       case '*': case '/': case DIV: case MOD: case '<': case '>': case'=': case ':': case LE: case GE: case EE:
- //       printf("check1\n");
-	t = lookahead;
+ 	t = lookahead;
         match(lookahead);factor(); emit(t,NONE);
 	continue;
       
      default:
-//	 printf("lookahead is %c\n",lookahead);
-         return;
+	return;
     }
   }
 
 }
 
 
+
+
+/**
+ *
+ *A factor function representing the factor non -terminal for parsing
+ *
+ * */
+
+
 factor()
 {
-//    printf("factor");
     switch(lookahead) {
       case '(':
         match('('); expr(); match(')'); break;
@@ -99,33 +243,33 @@ factor()
         emit(NUM, tokenval);match(NUM); break;
       case ID:
 	emit(ID, tokenval); match(ID); break;
-     // case IF:
-  //	emit(IF,tokenval);match(IF);expr();break;
-    //  case WHILE:
-//	emit(WHILE,tokenval); match(WHILE); expr(); break;
       default:
         error("syntax error factor");
     }
   
 }
 
+
+
+
+/***
+ *
+ * Matches a given entity with the present lookahead, if match proceeds to the next lookahead, else gives an error
+ *
+ *
+ */
+
+
+
 match(int t)
 {
   if(lookahead == t)
    {
-//	 printf("matched: %d\n",t);
 	 lookahead = lexan(fp);
-//	 printf("ne ->tval %d\n",tokenval);
-//	 printf("next-> %d\n",lookahead);
-	 
-	 //return 1;
    }
   else
   {
-       printf("Lookahead %d",lookahead);
-       printf(" to match ->>%c",t);
       error("syntax error match");
-      // return 0;
        
   }
 }

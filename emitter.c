@@ -1,10 +1,17 @@
-
+/**
+ *
+ * The emitter file for the project
+ *
+ * @author Debarghya Nandi
+ *
+ *
+ *
+ * */
 #include "global.h"
 
 emit(int t, int tval)
 {
       switch(t) {
-    //  printf("%d",t);	
       case '+': case '-': case '*': case '/':
           printf("%c\n",t); break;
       case DIV:

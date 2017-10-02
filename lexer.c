@@ -1,6 +1,9 @@
 /**
-
-This one follows the regular grammar to produce lexemes and and it is later evaluated whether its a token or not
+* This one follows the regular grammar to produce lexemes and and it is later evaluated whether its a token or not
+* 
+* @author Debarghya Nandi
+*
+*
 */
 
 
@@ -16,27 +19,35 @@ char lexbuf[BSIZE];
 int lineno = 1;
 int tokenval =  NONE;
 
-// returns the token from the text
+/**
+ *  returns the tokentype from the character read
+ *
+ */
+
+  
 int lexan(FILE* fp)
 {
- // printf("entered lexan\n");
+ 
   int t;
   char c;
   
-  while(1)  {
-    t = getc(fp); // stores the next val
-  //  printf("la: %c\n",t);
-    //printf(isdigit(t));
-    if (t == ' ' || t == '\t')
+ 
+
+
+ while(1)  {
+    t = getc(fp); //  gets the next character from the file
+    
+    if (t == ' ' || t == '\t')    // if tab space/space found we move to the next character
       ;
-    else if (t == '\n')
+    else if (t == '\n')    // if newline found we move to the next line
       lineno++;
-    else if (isdigit(t)) {
-     // printf("number found");
+    
+    else if (isdigit(t)) {   // if a digit is found we return NUM
       tokenval=t;
       return NUM;
     }
-    else if(t=='<')
+    
+    else if(t=='<')            // if we get a < sign we take the next character to check for '=', then return accordingly
     {
 	while((c=getc(fp))==(' ' || '\n'));
 	if(c == '='){
@@ -52,7 +63,7 @@ int lexan(FILE* fp)
 	   
     }
     
-    else if(t=='>')
+    else if(t=='>')            // if we get a > sign we take the next character to check for '='. then return accordingly
     {
 	while((c=getc(fp))==(' ' || '\n'));
 	if(c == '='){
@@ -68,7 +79,7 @@ int lexan(FILE* fp)
 	   
     }
     
-    else if(t=='=')
+    else if(t=='=')            // if we get a = sign we take the next character to check for '=', then return accordingly
     {
 	while((c=getc(fp))==(' ' || '\n'));
 	if(c == '='){
@@ -83,11 +94,11 @@ int lexan(FILE* fp)
 	}
 	   
     }
-    else if(t=='#')
+    else if(t=='#')          // set the flag for defining constant, the command being #def constant
     {
 	cflag=1;
     }
-    else if(isalpha(t) && cflag==1)
+    else if(isalpha(t) && cflag==1)      // check for #def constant
     {
       int p=0;
       int b=0;
@@ -104,12 +115,9 @@ int lexan(FILE* fp)
      if(t!=EOF)
 	ungetc(t,fp);
 	
-     //printf("%s",lexbuf);
      if(strcmp(lexbuf,"def")==0){
-     //	printf("constant decl\n");
 	p= lookup(lexbuf);
      	tokenval=p;setLexeme(lexbuf);
-     //	printf("token value %d\n",tokenval);
 	cflag=0;
      	return CONSTANT;
      }
@@ -117,10 +125,9 @@ int lexan(FILE* fp)
 	
     }	
     
-    else if(t=='$')
+    else if(t=='$')                        // check for the $ sign, as it represents the beginning of a comment line.
     {
 
-       //  printf("che ");
 	while((t=getc(fp))!='\n');
 	lineno++;
 	// ignore whole line
@@ -128,8 +135,7 @@ int lexan(FILE* fp)
 	
     }	
    	
-    else if (isalpha(t) && cflag==0) {
-     // printf("che ");
+    else if (isalpha(t) && cflag==0){         // the condition for any alphanumeric input
       int p, b = 0;
       int ct=0;
       while (isalnum(t) || t=='_') { // if alpha numeric
@@ -156,12 +162,10 @@ int lexan(FILE* fp)
       if(t != EOF)   
         ungetc(t, fp);
       p = lookup(lexbuf); // check if it is a preexisting symbol
- //     printf("The result of lookup is %d",p);
       if(p==NOT_FOUND)
         p = insert(lexbuf, ID); // if it's not there insert the symbol with a value
       tokenval = p;  // returns the last entry to the symbol table
       setLexeme(lexbuf);
-//      printf("lexer cholche!");
       return getTokenType(p); // returns the token type of the last symbol
     }
 
@@ -169,7 +173,6 @@ int lexan(FILE* fp)
       return DONE;
 
     else {
-      //printf("che");
       tokenval = NONE;
       return t;
     }
