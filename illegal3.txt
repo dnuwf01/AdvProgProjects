@@ -1,0 +1,6 @@
+begin
+int a_t;
+while(b>=8);
+a=a++;
+endwhile;
+end

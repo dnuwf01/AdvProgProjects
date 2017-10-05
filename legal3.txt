@@ -1,0 +1,9 @@
+begin
+int a;
+a=1;
+while(a>=5);
+if(b<=5);
+b=b*h;
+endif;
+endwhile;
+end

@@ -21,11 +21,13 @@
 #define EE 406
 #define INT 407
 #define CONSTANT 408
+#define ENDIF 409
+#define ENDWHILE 410
+#define NE 411
 
 
+int tokenval; // the tokentype for the lexeme
+int lineno;   // the current line number for buffer read
+int cflag;   // the flag is used to differentiate between normal id and constant #def
 
-int tokenval;
-int lineno;
-int cflag;
-
-FILE* fp;
+FILE* fp;    // file pointer 

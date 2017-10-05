@@ -1,0 +1,11 @@
+begin
+int a;
+a=5;
+if(a>b);
+b=b+5;
+endif;
+while(d<m);
+l=l*a;
+endwhile;
+end
+

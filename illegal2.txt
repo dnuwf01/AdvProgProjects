@@ -1,0 +1,6 @@
+begin
+int a_b;
+a_b=5;
+if(b>=h);
+h=k+1;
+end

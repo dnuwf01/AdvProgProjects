@@ -59,10 +59,13 @@ struct entry keywords[] = {
    "div", DIV,
    "mod", MOD,
    "if",IF,
+   "endif",ENDIF,
    "while",WHILE,
+   "endwhile",ENDWHILE,
    "<=",LE,
    ">=",GE,
    "==",EE,
+   "!=",NE,
    "int",INT,
    "def",CONSTANT,
    0 , 0
@@ -80,6 +83,7 @@ init()
 /**
  *
  * This function looks up the symbol table, to see if a specific symbol is already present in the symbol table or not.
+ * @param the lexeme string to be looked up
  * @return the tokentype if present
  * else returns -1
  *
@@ -110,6 +114,8 @@ int lookup(char s[])
  *
  * This function inserts a new symbol into the symbol table. The hashvalue of the symbol is calculated in the hashVal function and then nodes are traversed to 
  * insert the new node.
+ * @param s[]: the lexeme string to be inserted
+ * @param tok : the tokentype for the lexeme string
  * @return the tokentype after inserting
  * 
  *
@@ -156,6 +162,7 @@ int insert(char s[], int tok)
 
 /**
  *  A function to set the current lexeme array
+ *  @param the lexeme to be set
  */  
 
 void setLexeme(char s[])
@@ -173,6 +180,7 @@ void setLexeme(char s[])
 
 /**
  *  A function to return the current lexeme array
+ *  @return the lexeme
  */
   
 char* getLexeme()
@@ -184,6 +192,7 @@ char* getLexeme()
 
 /**
  * A function to return the tokentype
+ * @return the tokentype
  */
 
 
@@ -199,7 +208,8 @@ int getTokenType(int i)
 
 /**
  *  A function to calculate the hash value for a given string and return it. Hash value is calculated based on the ASCII value.
- *
+ *  @param str: the lexeme string for which the hash value is to be calculated
+ *  @return the hash value.
  */
 
   

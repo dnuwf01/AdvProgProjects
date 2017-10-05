@@ -21,7 +21,7 @@ int tokenval =  NONE;
 
 /**
  *  returns the tokentype from the character read
- *
+ *  @param the file pointer
  */
 
   
@@ -94,6 +94,22 @@ int lexan(FILE* fp)
 	}
 	   
     }
+    
+    else if(t=='!')            // if we get a = sign we take the next character to check for '=', then return accordingly
+    {
+	while((c=getc(fp))==(' ' || '\n'));
+	if(c == '='){
+	  int k = lookup("!=");
+		if(k!=NOT_FOUND)
+			return getTokenType(k);
+	}
+	else {
+	    ungetc(c,fp);
+	    tokenval=NONE;
+	    return t;    	
+	}
+	   
+    }
     else if(t=='#')          // set the flag for defining constant, the command being #def constant
     {
 	cflag=1;
@@ -135,7 +151,7 @@ int lexan(FILE* fp)
 	
     }	
    	
-    else if (isalpha(t) && cflag==0){         // the condition for any alphanumeric input
+    else if ((isalpha(t) || t=='_') && cflag==0){         // the condition for any alphanumeric input
       int p, b = 0;
       int ct=0;
       while (isalnum(t) || t=='_') { // if alpha numeric
@@ -148,7 +164,13 @@ int lexan(FILE* fp)
       }  
       lexbuf[b] = EOS; // put the last character as end of string
       
-      if(lexbuf[b-1]=='_') error("Identifier name cannot end with underscore !!!!\n");
+      // check whether the first character in the identifier is a character or not
+      if(!((lexbuf[0]>=65 && lexbuf[0]<=90) || (lexbuf[0]>=97 && lexbuf[0]<=122))) error("Identifier name must start with a letter !!\n");
+      
+      // check whether the last character is an underscore or not
+      if(lexbuf[b-1]=='_') error("Identifier name cannot end with underscore !!!!\n"); 
+
+      
 
       
 
@@ -169,7 +191,7 @@ int lexan(FILE* fp)
       return getTokenType(p); // returns the token type of the last symbol
     }
 
-    else if (t == EOF)
+    else if (t == EOF )
       return DONE;
 
     else {

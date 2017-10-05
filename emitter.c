@@ -19,14 +19,14 @@ emit(int t, int tval)
       case MOD:
           printf("MOD\n"); break;
       case NUM:
-          printf("%d\n", tval); break;
+          printf("%d\n",tval); break;
       case ID:
           printf("%s\n",getLexeme()); break;
       case IF:
 	  printf("IF");
       case WHILE:
 	  printf("WHILE");
-      case '<': case'>': case'=': 
+      case '<': case'>': case'=': case'!': 
 	  printf("%c\n",t);break;
       case LE:
 	  printf("<=\n"); break;
@@ -34,6 +34,8 @@ emit(int t, int tval)
 	  printf(">=\n"); break;
       case EE:
 	  printf("==\n"); break;
+      case NE:
+	  printf("!=\n"); break;
       case INT:
 	  printf("INT\n"); break;
       case CONSTANT:

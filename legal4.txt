@@ -1,0 +1,15 @@
+begin
+int a;
+a=89;
+if(a>=b);
+while(c==d);
+m=k+9;
+endwhile;
+j=j mod 24;
+k = k div 56;
+endif;
+#def t 25
+$ comment line to be ignored
+end
+
+

@@ -2,16 +2,10 @@
  *
  * The parse file reads the document from the file and checks if it is a legal statement or not.
  *
+  	
  * @author Debarghya Nandi
  *
- * 
- *
- *
- * */
-
-
-
-
+ */ 
 
 
 
@@ -28,7 +22,7 @@ int lookahead;
 /**
  *
  * Parses a given set of statements
- *
+ * @param the file name to be read
  * */
 
 parse(char* file)
@@ -38,10 +32,13 @@ parse(char* file)
   lookahead = lexan(fp);
   match(BEGIN);   // matches BEGIN of file
 
-  statement();
-
-  match(END);  // matches END of file
-  exit(1);
+  while(lookahead!=END && lookahead!=DONE) 
+   {
+	statement();
+   }
+  if(lookahead==DONE) error("Illegal Statement encountered !!!\n");
+  else match(END);  // matches END of file
+  error("Program legal: Successfully compiled !!!\n");
 }
 
 
@@ -51,14 +48,13 @@ parse(char* file)
 
 
 /**
- * A function that takes in the statement
+ * A function that takes in the statement and select the particular operation to work on
  *
  * */
 
 statement()
 {
 	
-while(lookahead != END){ 
     
     switch(lookahead){
     case IF:
@@ -70,23 +66,36 @@ while(lookahead != END){
     	break;
 
     case ID:
-  	 assignment();
+  	 assignment();          
          break;
     case INT:
-	emit(INT,tokenval); 
-	match(INT);
-	continue;
+	emit(INT,tokenval);  // declaration
+	declaration();
+	break;
         
     case CONSTANT:
 	constant_declaration();
 	break;
+    
     default:
+	error("Illegal Statement encountered !!!!!!!\n");
 	
-	error("No action\n");
   }	
-  }
+ 
 }  
 
+
+/****************************************
+ * handles a declaration statement 
+ * i.e int a;
+****************************************/
+
+declaration()
+{
+     match(INT);
+     match(ID);
+     match(';');
+}
 
 
 
@@ -94,14 +103,20 @@ while(lookahead != END){
 
 /**
  *A function to carry out the operation of the iterator
-* 
-**/
+* i.e. while(a>b)endwhile;
+* **/
 
 
 iterator()
 {
   match(WHILE);
   expr();
+  match(';');
+  while(lookahead != ENDWHILE)
+  {
+        statement();
+  }	
+  match(ENDWHILE);
   match(';');
 }
 
@@ -112,11 +127,12 @@ iterator()
 
 /**
  * A function to carry out the assignment operation
- *
+ * 
  * */
 
 assignment()
 {
+  
   expr();
   match(';');
 }
@@ -131,11 +147,19 @@ assignment()
  *
  *A function to implement the selector operation
  * 
- * */
+ **/
 selector()
 {
+
  match(IF);
  expr();
+ match(';');
+ while(lookahead!= ENDIF)    // my selector block accepts a max of 10 statements, else it is impossible to check for missing endif, results in an infinite      
+ {
+    statement();
+ }
+ 
+ match(ENDIF);
  match(';');
 }
 
@@ -147,7 +171,7 @@ selector()
 
 /**
  *
- *A function to handle constant declaration
+ * A function to handle constant declaration
  *
  *
  * */
@@ -212,12 +236,13 @@ term()
   factor();
   while(1) {
     switch(lookahead) {
-      case '*': case '/': case DIV: case MOD: case '<': case '>': case'=': case ':': case LE: case GE: case EE:
+      case '*': case '/': case DIV: case MOD: case '<': case '>': case'=':case'!': case ':': case LE: case GE: case EE: case NE:
  	t = lookahead;
         match(lookahead);factor(); emit(t,NONE);
 	continue;
       
      default:
+        if(lookahead==NUM) factor();     // if we have multiple digits in a number
 	return;
     }
   }
@@ -244,7 +269,7 @@ factor()
       case ID:
 	emit(ID, tokenval); match(ID); break;
       default:
-        error("syntax error factor");
+        error("Illegal statement encountered !!!!\n");
     }
   
 }
@@ -269,7 +294,7 @@ match(int t)
    }
   else
   {
-      error("syntax error match");
+      error("Illegal statement encountered !!!!!\n");
        
   }
 }

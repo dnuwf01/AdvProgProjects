@@ -1,7 +1,10 @@
 begin
-a_b=5;
-if(c<=b);
-while(d>=e);
+int a_b;
+while(d>=e); 
+if(b<=m); 
+a=n+k;
+endif;
+endwhile;
 #def q 25
 $kemckelm
 end

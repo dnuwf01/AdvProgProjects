@@ -1,0 +1,12 @@
+begin
+int a_p;
+a_p=53;
+#def h 98
+if(n>=m);
+p=p+r;
+while(k==9);
+j=j mod 8;
+k=k div 9;
+endwhile;
+endif;
+
