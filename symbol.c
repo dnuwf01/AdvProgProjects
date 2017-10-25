@@ -26,28 +26,29 @@
  *
  *  *
  */
-struct symbolInfo{
+/*struct symbolInfo{
 	
 	char lexptr[STRMAX];
 	int tokentype;
+	int declared_status; // keeps track whether the ID is declared or not
 	struct symbolInfo* next;
 };
-
+*/
 /* a string array to keep the lexeme*/
-char lexemeArr[SYMMAX];
+//char lexemeArr[SYMMAX];
 
 
 /**
 this structure contains the actual token and a tokentype value attributed to it
 */
-struct entry {
-	char lexptr[SYMMAX];
-	int token;
-};
+//struct entry {
+//	char lexptr[SYMMAX];
+//	int token;
+//};
 
 
 // creates  a hash table 
-struct symbolInfo hashArray[SYMMAX];
+//struct symbolInfo hashArray[SYMMAX];
 
 
 
@@ -68,6 +69,8 @@ struct entry keywords[] = {
    "!=",NE,
    "int",INT,
    "def",CONSTANT,
+   "else",ELSE,
+   "endelse",ENDELSE,
    0 , 0
 };
 
@@ -95,6 +98,7 @@ int lookup(char s[])
 	if(strcmp(aNode->lexptr,s)==0)
 	{
 		return aNode->tokentype;
+		//return aNode;
 	}
 	else
 	{
@@ -103,13 +107,77 @@ int lookup(char s[])
 			if(strcmp(aNode->lexptr,s)==0)
 			{
 				return aNode->tokentype;
+				//return aNode;
 			} 
 		aNode = aNode->next;
 		}	
 	}
 	return NOT_FOUND;
+	//return NULL;
 }
 
+
+
+struct symbolInfo* givePointer(char s[])
+{
+	int val=hashval(s);
+	struct symbolInfo* aNode = (struct symbolInfo*)malloc(sizeof(struct symbolInfo));
+	aNode = &hashArray[val];
+	if(strcmp(aNode->lexptr,s)==0)
+	{
+		//return aNode->tokentype;
+		return *(&aNode);
+	}
+	else
+	{
+		while(aNode)
+		{
+			if(strcmp(aNode->lexptr,s)==0)
+			{
+				//return aNode->tokentype;
+				return *(&aNode);
+			} 
+		aNode = aNode->next;
+		}	
+	}
+	//return NOT_FOUND;
+	return NULL;
+}
+
+
+
+
+
+/*
+ int setDecl_Status(char s[],int status)
+{
+	int val=hashval(s);
+	struct symbolInfo* aNode = (struct symbolInfo*)malloc(sizeof(struct symbolInfo)); 
+	aNode = &hashArray[val];
+	if(strcmp(aNode->lexptr,s)==0)
+	{
+		aNode->declared_status=1;
+		//return aNode->tokentype;
+		//return (struct symbolInfo*)aNode;
+		return 1;
+	}
+	else
+	{
+		while(aNode)
+		{
+			if(strcmp(aNode->lexptr,s)==0)
+			{
+				//return aNode->tokentype;
+				//return (struct symbolInfo*)aNode;
+				return 1;
+			} 
+		aNode = aNode->next;
+		}	
+	}
+	return NOT_FOUND;
+	//return NULL;
+}
+*/
 /**
  *
  * This function inserts a new symbol into the symbol table. The hashvalue of the symbol is calculated in the hashVal function and then nodes are traversed to 
@@ -128,13 +196,15 @@ int insert(char s[], int tok)
 	struct symbolInfo* node = (struct symbolInfo*)malloc(sizeof(struct symbolInfo));
 	strcpy(node->lexptr,s);
 	node->tokentype=tok;
+	node->declared_status=0;
 	node->next=NULL;
 
 
 	//check for the hash value and insert it into the table accordingly
 	int hval = hashval(s);
 	// initialise a pointer to the hashed value
-	struct symbolInfo* anchor = &hashArray[hval];	
+	struct symbolInfo* anchor = (struct symbolInfo*)malloc(sizeof(struct symbolInfo));
+	anchor = &hashArray[hval];	
 
 
 
@@ -146,6 +216,7 @@ int insert(char s[], int tok)
 		anchor->tokentype=tok;
 		anchor->next=NULL;
 		return anchor->tokentype;
+		//return anchor;
 	}
 	else{
 		struct symbolInfo* aNode = anchor;
@@ -155,6 +226,7 @@ int insert(char s[], int tok)
 		}
 		aNode = node;
 		return aNode->tokentype;
+		//return aNode;
 	}
 }
 
@@ -200,6 +272,36 @@ int getTokenType(int i)
 {
 	return i;
 }
+
+
+/**
+ * A function to check the declaration status of a variable
+ *
+ * */
+
+int check_decl_status(struct symbolInfo* node)
+{
+	if(node->declared_status == FALSE)
+		return FALSE;
+	else return TRUE;
+}
+
+
+
+
+/**
+ *
+ * A function to set the declaration status of a variable
+ *
+ *
+ * */
+
+int set_decl_status(struct symbolInfo* node,int status)
+{
+	node->declared_status = status;
+	return 1;
+}
+
 
 
 

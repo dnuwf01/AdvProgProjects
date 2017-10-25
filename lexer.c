@@ -43,6 +43,7 @@ int lexan(FILE* fp)
       lineno++;
     
     else if (isdigit(t)) {   // if a digit is found we return NUM
+      printf("NUM is %d\n",t);
       tokenval=t;
       return NUM;
     }
@@ -152,7 +153,9 @@ int lexan(FILE* fp)
     }	
    	
     else if ((isalpha(t) || t=='_') && cflag==0){         // the condition for any alphanumeric input
-      int p, b = 0;
+      int p,b = 0;
+      
+      //struct symbolInfo* p;
       int ct=0;
       while (isalnum(t) || t=='_') { // if alpha numeric
         lexbuf[b] = t;
@@ -188,6 +191,7 @@ int lexan(FILE* fp)
         p = insert(lexbuf, ID); // if it's not there insert the symbol with a value
       tokenval = p;  // returns the last entry to the symbol table
       setLexeme(lexbuf);
+      //setLexeme(p);
       return getTokenType(p); // returns the token type of the last symbol
     }
 
@@ -201,3 +205,10 @@ int lexan(FILE* fp)
 
   }
 }
+
+
+
+
+
+
+

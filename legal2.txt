@@ -1,5 +1,5 @@
 begin
-int a;
+int a_b;
 a=5;
 if(a>b);
 b=b+5;

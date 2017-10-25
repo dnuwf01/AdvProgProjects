@@ -1,6 +1,12 @@
 begin
-int a;
-a=5;
-a=b+c;
-m=q*r;
+int i;
+int j;
+while(i<j);
+if(i>j);
+i=i-j;
+endif;
+else 
+j=j-i;
+endelse;
+endwhile;
 end

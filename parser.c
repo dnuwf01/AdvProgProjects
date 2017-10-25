@@ -9,9 +9,9 @@
 
 
 
-
+#include <string.h>
 #include "global.h"
-
+#include "stack.h"
 
 
 
@@ -31,7 +31,10 @@ parse(char* file)
   fp = fopen(file,"r");   // reads the given file
   lookahead = lexan(fp);
   match(BEGIN);   // matches BEGIN of file
-
+  myStack = createStack();
+  regCounter=1;
+  currRegister = (char*)malloc(sizeof(char)*5);
+  blockReport = (char*)malloc(sizeof(char)* 1000);
   while(lookahead!=END && lookahead!=DONE) 
    {
 	statement();
@@ -58,11 +61,18 @@ statement()
     
     switch(lookahead){
     case IF:
-    	selector();
+    	printf("GOTO L3\n");
+	selectorIf();
+	break;
+    
+    case ELSE:
+	printf("GOTO L2\n");
+	selectorElse();
 	break;
     
     case WHILE:
-    	iterator();
+    	printf("GOTO L1\n");
+	iterator();
     	break;
 
     case ID:
@@ -93,6 +103,15 @@ statement()
 declaration()
 {
      match(INT);
+     //printf("Printing the declared variable: %s",getLexeme());
+     //struct symbolInfo* node = (struct symbolInfo*)malloc(sizeof(struct symbolInfo));
+    // node = givePointer(getLexeme());
+     if(check_decl_status(givePointer(getLexeme())))
+	printf("Redeclaration Case!!!!!!!!!\n");
+     else set_decl_status(givePointer(getLexeme()),TRUE);
+
+    //struct symbolInfo* node = givePointer(getLexeme());
+     //printf("Printing the accessNode value %d",accessNode(getLexeme()));
      match(ID);
      match(';');
 }
@@ -133,7 +152,17 @@ iterator()
 assignment()
 {
   
+  //expr();
+ // struct symbolInfo* node = givePointer(getLexeme());
+  if(!check_decl_status(givePointer(getLexeme()))) printf("Error::: Variable not declared !!!");
+  //char *c = (char*)malloc(sizeof(char)*5); 
+  //strcpy(c,getLexeme()); 
+  match(ID);
+  match('=');
   expr();
+  
+  //char* result = pop(myStack);
+  printf("%s: = %s\n",getLexeme(),pop(myStack));
   match(';');
 }
 
@@ -148,20 +177,68 @@ assignment()
  *A function to implement the selector operation
  * 
  **/
-selector()
+selectorIf()
 {
-
+ if(lookahead == IF){
  match(IF);
  expr();
+ pop(myStack);
  match(';');
- while(lookahead!= ENDIF)    // my selector block accepts a max of 10 statements, else it is impossible to check for missing endif, results in an infinite      
+ while(lookahead!=ENDIF)    // my selector block accepts a max of 10 statements, else it is impossible 
  {
-    statement();
+	 statement();
  }
- 
- match(ENDIF);
- match(';');
 }
+match(ENDIF);match(';');
+
+// if(lookahead == ELSE){
+  
+ //  match(ELSE); 
+  // while(lookahead!=ENDELSE)
+//	statement();
+
+ //} 
+// match(ENDELSE);
+// match(';');
+}
+
+
+selectorElse()
+{
+    if(lookahead == ELSE)
+    {
+	match(ELSE);
+	while(lookahead!=ENDELSE)
+		statement();
+	
+	match(ENDELSE);
+	match(';');
+    }
+}
+
+
+
+
+
+
+
+
+char* generateRegister()
+{
+	char* str;
+	str = (char*)malloc(sizeof(char)*5);
+	char* num;
+	num = (char*)malloc(sizeof(char)*5);
+	strcat(str,"r");
+//	printf("one - %s\n",str);
+	sprintf(num,"%d",regCounter);
+	strcat(str,num);
+//	printf("two - %s\n",str);
+	regCounter++;
+//	printf("Printing register value from generator: %s\n",str);
+	return str;
+}
+
 
 
 
@@ -196,19 +273,28 @@ constant_declaration()
  *
  * The expression function representing the expression non-terminal for parsing
  *
- * */
+  */
 
 
 expr()
 {
- 
+  //printf("expr"); 
   int t;
+  char *c,*d;
+  c = (char*)malloc(sizeof(char)*5);
+  d = (char*)malloc(sizeof(char)*5);
   term();
   while(1) {
     switch(lookahead) {
       case '+': case '-':
         t = lookahead;
-        match(lookahead); term(); emit(t, NONE);
+        match(lookahead); term();
+	currRegister = generateRegister();
+	c = pop(myStack);
+	d = pop(myStack);
+	printf("%s : = %s %c %s \n",currRegister,c,t,d);
+	push(myStack,currRegister);
+//	emit(t, NONE);
         continue;
       default:
         return;
@@ -231,18 +317,28 @@ expr()
 
 term()
 {
- 
+  //printf("term");
   int t;
+  char *a,*b;
+  a=(char*)malloc(sizeof(char)* 5);
+  b = (char*)malloc(sizeof(char)*5);
   factor();
   while(1) {
     switch(lookahead) {
       case '*': case '/': case DIV: case MOD: case '<': case '>': case'=':case'!': case ':': case LE: case GE: case EE: case NE:
  	t = lookahead;
-        match(lookahead);factor(); emit(t,NONE);
+        match(lookahead);factor(); 
+	currRegister = generateRegister();
+	a=pop(myStack);
+	b=pop(myStack);
+	printf("%s : = %s %c %s \n",currRegister,a,t,b);
+	
+	
+//	emit(t,NONE);
 	continue;
       
      default:
-        if(lookahead==NUM) factor();     // if we have multiple digits in a number
+ //       if(lookahead==NUM) factor();     // if we have multiple digits in a number
 	return;
     }
   }
@@ -261,13 +357,31 @@ term()
 
 factor()
 {
+    //printf("factor");
     switch(lookahead) {
       case '(':
         match('('); expr(); match(')'); break;
       case NUM:
-        emit(NUM, tokenval);match(NUM); break;
+//	printf("pushing number into stack : %d\n",tokenval);
+//	push(myStack,tokenval);
+//	intVal =(intVal*10)+tokenval;
+//	match(NUM); if(lookahead == NUM) factor();
+	printf("Printing tokenval: %d",tokenval);
+	currRegister = generateRegister();
+	push(myStack,currRegister);
+	printf("%s : = %d\n",currRegister,tokenval); *currRegister = '\0';
+//	intVal=0;
+//	emit(NUM,intVal); break;
+  //      emit(NUM, tokenval);
+        match(NUM); break;
       case ID:
-	emit(ID, tokenval); match(ID); break;
+	if(!check_decl_status(givePointer(getLexeme()))) printf("Error :: Variable not declared !!\n");
+	currRegister = generateRegister();
+	push(myStack,currRegister);
+	printf("%s : = %s\n",currRegister,getLexeme()); * currRegister = '\0';
+	
+//	emit(ID, tokenval); 
+	match(ID); break;
       default:
         error("Illegal statement encountered !!!!\n");
     }
@@ -294,7 +408,10 @@ match(int t)
    }
   else
   {
-      error("Illegal statement encountered !!!!!\n");
+      	printf("lookahead -> %d\n",lookahead);
+	printf("to match -> %d\n",t);
+	error("Illegal statement encountered !!!!!\n");
        
   }
 }
+

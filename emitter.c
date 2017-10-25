@@ -37,7 +37,7 @@ emit(int t, int tval)
       case NE:
 	  printf("!=\n"); break;
       case INT:
-	  printf("INT\n"); break;
+	  printf(""); break;
       case CONSTANT:
 	  printf("Constant Declaration:\n"); break;
       case ':':
